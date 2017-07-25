@@ -641,6 +641,9 @@ class CoreTest(CoreTestBase):
         self.assertEqual(result_set, set(range(100)))
         self.assertEqual(bear.dependency_results, {})
 
+    def test_run_empty(self):
+        self.execute_run(set())
+
 
 # Execute the same tests from CoreTest, but use a ThreadPoolExecutor instead.
 # The core shall also seamlessly work with Python threads. Also there are
@@ -650,3 +653,17 @@ class CoreOnThreadPoolExecutorTest(CoreTest):
     def setUp(self):
         super().setUp()
         self.executor = ThreadPoolExecutor, tuple(), dict(max_workers=8)
+
+
+# This test class only runs test cases once, as the tests here rely on specific
+# executors / having the control over executors.
+class CoreOnSpecificExecutorTest(CoreTestBase):
+    def test_custom_executor_closed_after_run(self):
+        executor = ThreadPoolExecutor(max_workers=1)
+
+        self.execute_run(set(), executor)
+
+        # Submitting new tasks should raise an exception now.
+        with self.assertRaisesRegex(
+                RuntimeError, 'cannot schedule new futures after shutdown'):
+            executor.submit(lambda: None)

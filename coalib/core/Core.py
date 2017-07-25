@@ -173,7 +173,8 @@ class Session:
         :param executor:
             Custom executor used to run the bears. If ``None``, a
             ``ProcessPoolExecutor`` is used using as many processes as cores
-            available on the system.
+            available on the system. Note that a passed custom executor is
+            closed after the core has finished.
         """
         self.bears = bears
         self.result_callback = result_callback
@@ -193,9 +194,8 @@ class Session:
         """
         Runs the coala session.
         """
-        # FIXME Allow to pass different executors nicely, for example to execute
-        # FIXME   coala with less cores, or to schedule jobs on distributed
-        # FIXME   systems (for example Mesos).
+        if not self.bears:
+            return
 
         self._schedule_bears(self.bears_to_schedule)
         try:
