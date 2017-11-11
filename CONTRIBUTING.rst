@@ -62,3 +62,7 @@ shall be amended so the history is not cluttered by “fixup commits”.
 
 For further information/queries feel free to discuss with us on
 `gitter <https://gitter.im/coala/coala>`__.
+
+::
+  
+    ignore = *.min.js
